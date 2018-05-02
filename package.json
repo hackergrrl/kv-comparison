@@ -2,5 +2,16 @@
   "name": "kv-comparison",
   "description": "benchmark to compare hyperdb against multi-hypercore + unordered-materialized-kv",
   "author": "noffle",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "hypercore": "^6.14.0",
+    "hyperdb": "^3.0.0-2",
+    "memdb": "^1.3.1",
+    "multi-hypercore": "^1.1.2",
+    "multi-hypercore-index": "^1.0.2",
+    "nanobench": "^2.1.1",
+    "random-access-memory": "^3.0.0",
+    "randombytes": "^2.0.6",
+    "unordered-materialized-kv": "^1.0.1"
+  }
 }

@@ -1,0 +1,6 @@
+{
+  "name": "kv-comparison",
+  "description": "benchmark to compare hyperdb against multi-hypercore + unordered-materialized-kv",
+  "author": "noffle",
+  "license": "ISC"
+}

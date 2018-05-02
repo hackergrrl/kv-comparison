@@ -28,10 +28,20 @@ function KV (storage, lvl) {
     }
   })
 
+  this.readyToCall = []
   this.writer = null
   multi.writer(function (_, w) {
     self.writer = w
+    self.readyToCall.forEach(function (fn) {
+      fn()
+    })
+    self.readyToCall = []
   })
+}
+
+KV.prototype.ready = function (fn) {
+  if (this.writer) process.nextTick(fn)
+  else this.readyToCall.push(fn)
 }
 
 KV.prototype.put = function (key, value, cb) {

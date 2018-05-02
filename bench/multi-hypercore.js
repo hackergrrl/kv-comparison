@@ -7,7 +7,7 @@ var hyperkv = require('../multi-kv')
 bench('multi-hypercore/ram/insert & index 100 keys', function (b) {
   var db = hyperkv(ram, memdb())
 
-  setTimeout(function () {
+  db.ready(function () {
     b.start()
 
     var pending = 100
@@ -23,5 +23,5 @@ bench('multi-hypercore/ram/insert & index 100 keys', function (b) {
         b.end()
       })
     }
-  }, 100)
+  })
 })

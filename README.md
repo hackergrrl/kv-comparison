@@ -7,32 +7,57 @@ various operations.
 
 ```
 # hyperdb/ram/insert & index 100 keys
-ok ~167 ms (0 s + 167297372 ns)
+ok ~169 ms (0 s + 168947589 ns)
 
 # hyperdb/ram/insert & index 1000 keys
-ok ~1.2 s (1 s + 199610583 ns)
+ok ~1.27 s (1 s + 267883227 ns)
 
 # hyperdb/ram/insert & index 10000 keys
-ok ~6.11 s (6 s + 109339387 ns)
+ok ~6.28 s (6 s + 284048380 ns)
+
+# hyperdb/disk/insert & index 100 keys
+ok ~138 ms (0 s + 137993549 ns)
+
+# hyperdb/disk/insert & index 1000 keys
+ok ~1.18 s (1 s + 180369442 ns)
+
+# hyperdb/disk/insert & index 10000 keys
+ok ~10 s (10 s + 117884361 ns)
 
 # multi-hypercore/ram/insert & index 100 keys
-ok ~113 ms (0 s + 112769419 ns)
+ok ~121 ms (0 s + 121406460 ns)
 
 # multi-hypercore/ram/insert & index 1000 keys
-ok ~972 ms (0 s + 972246595 ns)
+ok ~1.1 s (1 s + 95401536 ns)
 
 # multi-hypercore/ram/insert & index 10000 keys
-ok ~6.45 s (6 s + 453075847 ns)
+ok ~6.51 s (6 s + 514959403 ns)
+
+# multi-hypercore/disk/insert & index 100 keys
+ok ~329 ms (0 s + 328634711 ns)
+
+# multi-hypercore/disk/insert & index 1000 keys
+ok ~2.08 s (2 s + 81349481 ns)
+
+# multi-hypercore/disk/insert & index 10000 keys
+ok ~24 s (24 s + 98945027 ns)
 ```
 
 ## lookups
 
 ```
 # hyperdb/ram/lookup 1000 keys vs 1000 entries
-ok ~436 ms (0 s + 435908938 ns)
+ok ~364 ms (0 s + 363649039 ns)
+
+# hyperdb/disk/lookup 1000 keys vs 1000 entries
+ok ~399 ms (0 s + 398849674 ns)
 
 # multi-hypercore/ram/lookup 1000 keys vs 1000 entries
-ok ~477 ms (0 s + 476576257 ns)
+ok ~430 ms (0 s + 430498097 ns)
+
+# multi-hypercore/disk/lookup 1000 keys vs 1000 entries
+ok ~552 ms (0 s + 552186751 ns)
+
 ```
 
 # license

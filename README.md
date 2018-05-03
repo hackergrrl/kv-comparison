@@ -40,7 +40,7 @@ ok ~329 ms (0 s + 328634711 ns)
 ok ~2.08 s (2 s + 81349481 ns)
 
 # multi-hypercore/disk/insert & index 10000 keys
-ok ~24 s (24 s + 98945027 ns)
+ok ~13 s (12 s + 992249729 ns)
 ```
 
 ## lookups

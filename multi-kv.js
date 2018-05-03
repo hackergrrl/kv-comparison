@@ -85,12 +85,10 @@ KV.prototype.get = function (key, cb) {
 KV.prototype.getById = function (id, cb) {
   var feedkey = id.split('@')[0]
   var feedseq = Number(id.split('@')[1])
-  var feeds = this.multi.feeds()
-  for (var i = 0; i < feeds.length; i++) {
-    if (feeds[i].key.toString('hex') == feedkey) {
-      feeds[i].get(feedseq, cb)
-      return
-    }
+  var feed = this.multi.feed(new Buffer(feedkey, 'hex'))
+  if (feed) {
+    feed.get(feedseq, cb)
+  } else {
+    process.nextTick(cb, {notFound:true})
   }
-  process.nextTick(cb, {notFound:true})
 }

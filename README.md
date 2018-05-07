@@ -1,7 +1,12 @@
 # kv comparison
 
-Compares `hyperdb` to `multi-hypercore` + unordered-materialized-kv` speed for
-various operations.
+Compares
+
+- `hyperdb`
+- `multifeed` + `unordered-materialized-kv`
+- `hyperkv` + `hyperlog`
+
+speeds for various operations.
 
 ## insertions
 

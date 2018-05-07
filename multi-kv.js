@@ -1,6 +1,6 @@
 var hypercore = require('hypercore')
-var multicore = require('multi-hypercore')
-var indexer = require('multi-hypercore-index')
+var multifeed = require('multifeed')
+var indexer = require('multifeed-index')
 var umkv = require('unordered-materialized-kv')
 var ram = require('random-access-memory')
 var memdb = require('memdb')
@@ -12,19 +12,22 @@ function KV (storage, lvl) {
 
   var self = this
 
-  this.multi = multicore(hypercore, storage, { valueEncoding: 'json' })
+  this.multi = multifeed(hypercore, storage, { valueEncoding: 'json' })
 
   this.kv = umkv(lvl)
 
   this.index = indexer({
     cores: this.multi,
-    map: function (node, feed, seq, next) {
-      var entry = {
-        id: feed.key.toString('hex') + '@' + seq,
-        key: node.key,
-        links: node.links
-      }
-      self.kv.batch([entry], next)
+    maxBatch: 100,
+    batch: function (nodes, feed, seqs, next) {
+      var entries = nodes.map(function (node, n) {
+        return {
+          id: feed.key.toString('hex') + '@' + seqs[n],
+          key: node.key,
+          links: node.links
+        }
+      })
+      self.kv.batch(entries, next)
     }
   })
 

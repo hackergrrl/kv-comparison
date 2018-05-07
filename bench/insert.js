@@ -3,9 +3,11 @@ var hyperdb = require('hyperdb')
 var ram = require('random-access-memory')
 var randomBytes = require('randombytes')
 var memdb = require('memdb')
-var hyperkv = require('../multi-kv')
+var multikv = require('../multi-kv')
 var tmp = require('tmp').tmpNameSync
 var level = require('level')
+var hyperlog = require('hyperlog')
+var hyperkv = require('hyperkv')
 
 function hyperdbInsert (db, num, cb) {
   var ops = []
@@ -23,18 +25,34 @@ function hyperdbInsert (db, num, cb) {
 
 function multifeedInsert (db, num, cb) {
   db.ready(function () {
-    var pending = num
+    var ops = []
     for (var i = 0; i < num; i++) {
       var key = randomBytes(16).toString('hex')
       var value = randomBytes(32).toString('hex')
-      db.put(key, value, done)
+      ops.push({
+        key: key,
+        value: value,
+        links: []
+      })
     }
-
-    function done () {
-      if (--pending) return
+    db.batch(ops, function () {
       db.index.ready(cb)
-    }
+    })
   })
+}
+
+function hyperkvInsert (db, num, cb) {
+  var ops = []
+  for (var i = 0; i < num; i++) {
+    var key = randomBytes(16).toString('hex')
+    var val = randomBytes(32).toString('hex')
+    ops.push({
+      type: 'put',
+      key: key,
+      value: val
+    })
+  }
+  db.batch(ops, cb)
 }
 
 bench('hyperdb/ram/insert & index 100 keys', function (b) {
@@ -81,22 +99,22 @@ bench('hyperdb/disk/insert & index 10000 keys', function (b) {
   })
 })
 
-bench('multi-hypercore/ram/insert & index 100 keys', function (b) {
-  var db = hyperkv(ram, memdb())
+bench('multifeed/ram/insert & index 100 keys', function (b) {
+  var db = multikv(ram, memdb())
   b.start()
   multifeedInsert(db, 100, function () {
     b.end()
   })
 })
-bench('multi-hypercore/ram/insert & index 1000 keys', function (b) {
-  var db = hyperkv(ram, memdb())
+bench('multifeed/ram/insert & index 1000 keys', function (b) {
+  var db = multikv(ram, memdb())
   b.start()
   multifeedInsert(db, 1000, function () {
     b.end()
   })
 })
-bench('multi-hypercore/ram/insert & index 10000 keys', function (b) {
-  var db = hyperkv(ram, memdb())
+bench('multifeed/ram/insert & index 10000 keys', function (b) {
+  var db = multikv(ram, memdb())
   b.start()
   multifeedInsert(db, 10000, function () {
     b.end()
@@ -104,24 +122,86 @@ bench('multi-hypercore/ram/insert & index 10000 keys', function (b) {
 })
 
 
-bench('multi-hypercore/disk/insert & index 100 keys', function (b) {
-  var db = hyperkv(tmp(), level(tmp()))
+bench('multifeed/disk/insert & index 100 keys', function (b) {
+  var db = multikv(tmp(), level(tmp()))
   b.start()
   multifeedInsert(db, 100, function () {
     b.end()
   })
 })
-bench('multi-hypercore/disk/insert & index 1000 keys', function (b) {
-  var db = hyperkv(tmp(), level(tmp()))
+bench('multifeed/disk/insert & index 1000 keys', function (b) {
+  var db = multikv(tmp(), level(tmp()))
   b.start()
   multifeedInsert(db, 1000, function () {
     b.end()
   })
 })
-bench('multi-hypercore/disk/insert & index 10000 keys', function (b) {
-  var db = hyperkv(tmp(), level(tmp()))
+bench('multifeed/disk/insert & index 10000 keys', function (b) {
+  var db = multikv(tmp(), level(tmp()))
   b.start()
   multifeedInsert(db, 10000, function () {
     b.end()
+  })
+})
+
+bench('hyperkv/ram/insert & index 100 keys', function (b) {
+  var log = hyperlog(memdb(), { valueEncoding: 'json' })
+  var db = hyperkv({ log: log, db: memdb() })
+  b.start()
+  hyperkvInsert(db, 100, function () {
+    db.dex.ready(function () {
+      b.end()
+    })
+  })
+})
+bench('hyperkv/ram/insert & index 1000 keys', function (b) {
+  var log = hyperlog(memdb(), { valueEncoding: 'json' })
+  var db = hyperkv({ log: log, db: memdb() })
+  b.start()
+  hyperkvInsert(db, 1000, function () {
+    db.dex.ready(function () {
+      b.end()
+    })
+  })
+})
+bench('hyperkv/ram/insert & index 10000 keys', function (b) {
+  var log = hyperlog(memdb(), { valueEncoding: 'json' })
+  var db = hyperkv({ log: log, db: memdb() })
+  b.start()
+  hyperkvInsert(db, 10000, function () {
+    db.dex.ready(function () {
+      b.end()
+    })
+  })
+})
+
+bench('hyperkv/disk/insert & index 100 keys', function (b) {
+  var log = hyperlog(level(tmp()), { valueEncoding: 'json' })
+  var db = hyperkv({ log: log, db: level(tmp()) })
+  b.start()
+  hyperkvInsert(db, 100, function () {
+    db.dex.ready(function () {
+      b.end()
+    })
+  })
+})
+bench('hyperkv/disk/insert & index 1000 keys', function (b) {
+  var log = hyperlog(level(tmp()), { valueEncoding: 'json' })
+  var db = hyperkv({ log: log, db: level(tmp()) })
+  b.start()
+  hyperkvInsert(db, 1000, function () {
+    db.dex.ready(function () {
+      b.end()
+    })
+  })
+})
+bench('hyperkv/disk/insert & index 10000 keys', function (b) {
+  var log = hyperlog(level(tmp()), { valueEncoding: 'json' })
+  var db = hyperkv({ log: log, db: level(tmp()) })
+  b.start()
+  hyperkvInsert(db, 10000, function () {
+    db.dex.ready(function () {
+      b.end()
+    })
   })
 })

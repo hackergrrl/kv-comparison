@@ -61,6 +61,11 @@ KV.prototype.put = function (key, value, cb) {
   })
 }
 
+KV.prototype.batch = function (ops, cb) {
+  var w = this.writer
+  w.append(ops, cb)
+}
+
 KV.prototype.get = function (key, cb) {
   var self = this
 
